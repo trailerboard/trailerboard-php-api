@@ -5,7 +5,7 @@
  * Sends data to trailer data store
  * REQUIRES: PHP 5.2.0 or greater and cURL
  */
-class Trailer
+class TrailerBoard
 {
 
     public $apiKey;
@@ -13,26 +13,36 @@ class Trailer
     /**
      * Get config if exists
      */
-    public static function __construct($apiKey='')
+    public static function __construct($key='')
     {
 
-        if(empty($apiKey)){
+        if(empty($key)){
             $iniFile = rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'trailerboard.ini';
             if(file_exists($iniFile)){
                 //set api key
                 $config = parse_ini_file($iniFile);
                 if(!empty($config['API_KEY'])){
-                    $apiKey = $config['API_KEY'];
+                    $this->apiKey = $config['API_KEY'];
                 }
 
             } 
         }
+        else{
+            $this->apiKey = $key;
+        }
 
-        if(empty($apiKey)){
+        if(empty($this->apiKey)){
+            //no api key set
+            trigger_error('Missing TrailerBoard API Key', E_USER_ERROR);
+            return false;
+        }
+
+        if(strlen($this->apiKey) != 23){
             //no api key set
             trigger_error('Invalid TrailerBoard API Key', E_USER_ERROR);
             return false;
         }
+
     }
 
     /**
@@ -42,7 +52,7 @@ class Trailer
     {
         //suggestion for id is php session id
         try {
-            file_put_contents(rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'timers' . DIRECTORY_SEPARATOR . md5($tag.$id)),microtime(true));
+            file_put_contents(rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'timers' . DIRECTORY_SEPARATOR . md5($tag.$id),microtime(true));
         }
         catch (Exception $e) {
             trigger_error('Unable to write to the TrailerBoard data directory: '.$e->getMessage(), E_USER_ERROR);
@@ -57,7 +67,7 @@ class Trailer
      */
     public static function timerEnd($tag,$id)
     {
-        $timerFile = rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'timers' . DIRECTORY_SEPARATOR . md5($tag.$id));
+        $timerFile = rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'timers' . DIRECTORY_SEPARATOR . md5($tag.$id);
         if(file_exists($timerFile)){
             self::send($tag, microtime(true)-file_get_contents($timerFile), 1);
         }
@@ -156,16 +166,18 @@ class Trailer
                  break;
          }
 
+         $data['key'] = $this->apiKey;
+
         // POST THE DATA USING cURL
         $c = curl_init();
         curl_setopt($c, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($c, CURLOPT_CAINFO, rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR  ."cacert.cert");
+        curl_setopt($c, CURLOPT_CAINFO, rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR  ."cacert.crt");
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($c, CURLOPT_POST, true);
         curl_setopt($c, CURLOPT_URL, 'https://trailerboard.com/api/');
         curl_setopt($c, CURLOPT_POSTFIELDS, json_encode($data));
-        $output = curl_exec($ch);
+        $output = curl_exec($c);
 
     }
 }
