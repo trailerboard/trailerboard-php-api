@@ -13,7 +13,7 @@ class TrailerBoard
     /**
      * Get config if exists
      */
-    public static function __construct($key='')
+    public function __construct($key='')
     {
 
         if(empty($key)){
@@ -48,7 +48,7 @@ class TrailerBoard
     /**
      * Start one or more timers
      */
-    public static function timerStart($tag,$id)
+    public function timerStart($tag,$id)
     {
         //suggestion for id is php session id
         try {
@@ -65,20 +65,20 @@ class TrailerBoard
     /**
      * End a timer and log
      */
-    public static function timerEnd($tag,$id)
+    public function timerEnd($tag,$id)
     {
         $timerFile = rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR . 'timers' . DIRECTORY_SEPARATOR . md5($tag.$id);
         if(file_exists($timerFile)){
-            self::send($tag, microtime(true)-file_get_contents($timerFile), 1);
+            $this->send($tag, microtime(true)-file_get_contents($timerFile), 1);
         }
     
     }
     /**
      * Log a timer
      */
-    public static function timer($tag,$value)
+    public function timer($tag,$value)
     {
-        self::send($tag, $value, 1);
+        $this->send($tag, $value, 1);
         
         return true;
     }
@@ -86,9 +86,9 @@ class TrailerBoard
     /**
      * Increments counter.
      **/
-    public static function inc($tag)
+    public function inc($tag)
     {
-    self::send($tag, 1);
+    $this->send($tag, 1);
       
     return true;
     }
@@ -96,9 +96,9 @@ class TrailerBoard
     /**
      * Decrements counter.
      **/
-    public static function dec($tag)
+    public function dec($tag)
     {
-    self::send($tag, -1);
+    $this->send($tag, -1);
       
     return true;
     }
@@ -106,10 +106,10 @@ class TrailerBoard
     /**
      * Change by arbitrary amount.
      **/
-    public static function delta($tag, $delta)
+    public function delta($tag, $delta)
     {
 
-    self::send($tag, $delta);
+    $this->send($tag, $delta);
       
     return true;
     }
@@ -117,9 +117,9 @@ class TrailerBoard
     /**
      * Log average number.
      */
-    public static function number($tag, $value)
+    public function number($tag, $value)
     {
-        self::send($tag, $value, 1);
+        $this->send($tag, $value, 1);
         
         return true;
     }
@@ -127,9 +127,9 @@ class TrailerBoard
     /**
      * Override counter with arbitrary number.
      */
-    public static function value($tag, $value)
+    public function value($tag, $value)
     {
-        self::send($tag, $value, 3);
+        $this->send($tag, $value, 3);
         
         return true;
     }
@@ -137,9 +137,9 @@ class TrailerBoard
     /**
      * Log text event.
      */
-    public static function text($tag, $value)
+    public function text($tag, $value)
     {
-        self::send($tag, $value, 2);
+        $this->send($tag, $value, 2);
         
         return true;
     }
@@ -147,7 +147,7 @@ class TrailerBoard
     /*
      * Send values over UDP to server
      */
-    public static function send($tag, $value, $type=0)  //type 0 is aggregate, 1 is average aggregate, 2 is event, 3 is an override of the value for aggregate
+    public function send($tag, $value, $type=0)  //type 0 is aggregate, 1 is average aggregate, 2 is event, 3 is an override of the value for aggregate
     {
 
 
