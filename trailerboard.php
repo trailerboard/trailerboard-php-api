@@ -37,7 +37,7 @@ class TrailerBoard
             return false;
         }
 
-        if(strlen($this->apiKey) != 23){
+        if(strlen($this->apiKey) != 32){
             //no api key set
             trigger_error('Invalid TrailerBoard API Key', E_USER_ERROR);
             return false;
