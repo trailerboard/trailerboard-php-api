@@ -153,30 +153,30 @@ class TrailerBoard
 
          switch ($type) {
              case 1:
-                 $data = array('type'=>'number','tag'=>$tag,'value'=>$value);
+                 $data = 'value='. rawurlencode($value);
                  break;
              case 2:
-                 $data = array('type'=>'text','tag'=>$tag,'value'=>$value);
+                 $data = 'text='. rawurlencode($value);
                  break;
-             case 3:
-                 $data = array('type'=>'value','tag'=>$tag,'value'=>$value);
+            case 3:
+                 $data = 'overwrite='. rawurlencode($value);
                  break;
              default:
-                 $data = array('type'=>'counter','tag'=>$tag,'value'=>$value);
+                 $data = 'increment='. rawurlencode($value);
                  break;
          }
 
-         $data['key'] = $this->apiKey;
-
         // POST THE DATA USING cURL
         $c = curl_init();
-        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, true);
-        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($c, CURLOPT_CAINFO, rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR  ."cacert.crt");
+        curl_setopt($c, CURLOPT_USERPWD, $this->apiKey . ':none');  
+        //SSL IS ONLY REMOVED FOR THE DEMO - WILL BE AVAILABLE BY LAUNCH
+        //curl_setopt($c, CURLOPT_SSL_VERIFYPEER, true);
+        //curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 2);
+        //curl_setopt($c, CURLOPT_CAINFO, rtrim(dirname(__FILE__), '/\\') . DIRECTORY_SEPARATOR  ."cacert.crt");
         curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($c, CURLOPT_POST, true);
-        curl_setopt($c, CURLOPT_URL, 'https://trailerboard.com/api/');
-        curl_setopt($c, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($c, CURLOPT_URL, 'http://trailerboard.com/api/'.rawurlencode($tag));
+        curl_setopt($c, CURLOPT_POSTFIELDS, $data);
         $output = curl_exec($c);
 
     }
