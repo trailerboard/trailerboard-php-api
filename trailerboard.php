@@ -156,7 +156,7 @@ class TrailerBoard
                  $data = 'value='. rawurlencode($value);
                  break;
              case 2:
-                 $data = 'text='. rawurlencode($value);
+                 $data = 'data='. rawurlencode($value);
                  break;
             case 3:
                  $data = 'overwrite='. rawurlencode($value);
